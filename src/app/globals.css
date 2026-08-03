@@ -1,26 +1,70 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: 40 30% 96%;
+  --foreground: 240 10% 15%;
+  --card: 40 25% 98%;
+  --card-foreground: 240 10% 15%;
+  --primary: 45 70% 55%;
+  --primary-foreground: 240 10% 10%;
+  --secondary: 220 70% 50%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 40 15% 92%;
+  --muted-foreground: 240 5% 45%;
+  --accent: 38 75% 55%;
+  --accent-foreground: 240 10% 10%;
+  --border: 40 20% 85%;
+  --gradient-divine: radial-gradient(ellipse at top, hsl(45 80% 70% / .4) 0%, transparent 60%);
+  --gradient-sacred: linear-gradient(135deg, hsl(40 30% 96%) 0%, hsl(45 50% 95%) 50%, hsl(40 30% 96%) 100%);
+  --shadow-glow: 0 0 30px hsl(45 80% 55% / .3);
+  --shadow-soft: 0 4px 20px hsl(240 10% 15% / .08);
+  --shadow-elevated: 0 8px 30px hsl(240 10% 15% / .12);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-border: hsl(var(--border));
+  --font-serif: var(--font-cormorant);
+  --font-sans: var(--font-inter);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: var(--font-sans), Georgia, serif;
+}
+
+.font-display {
+  font-family: var(--font-serif), Georgia, serif;
+}
+
+.bg-gradient-divine {
+  background-image: var(--gradient-divine);
+}
+
+.bg-gradient-sacred {
+  background-image: var(--gradient-sacred);
+}
+
+.shadow-glow {
+  box-shadow: var(--shadow-glow);
+}
+
+.shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
+
+.shadow-elevated {
+  box-shadow: var(--shadow-elevated);
 }
