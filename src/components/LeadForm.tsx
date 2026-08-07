@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
-import { APP_URL } from "@/lib/constants";
+import { saveLead } from "@/lib/quizStorage";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -26,12 +26,9 @@ export function LeadForm({ source }: { source: string }) {
       if (!res.ok) throw new Error("request_failed");
 
       setStatus("success");
-      const target = new URL(APP_URL);
-      target.searchParams.set("utm_source", "funnel");
-      target.searchParams.set("utm_medium", "lead_form");
-      target.searchParams.set("lang", locale);
+      saveLead({ name, email, source });
       window.setTimeout(() => {
-        window.location.href = target.toString();
+        window.location.href = "/questionario";
       }, 1200);
     } catch {
       setStatus("error");
