@@ -4,6 +4,22 @@ export type Locale = "pt" | "en" | "es";
 
 export const locales: Locale[] = ["pt", "en", "es"];
 
+// Picks the best-supported locale from a browser's `Accept-Language` header
+// (e.g. "pt-BR,pt;q=0.9,en;q=0.8"), in the visitor's own preference order.
+// Falls back to English for any language we don't have full copy for —
+// we only maintain professional-quality translations for pt/en/es, so an
+// honest fallback beats a half-translated page.
+export function detectLocaleFromAcceptLanguage(header: string | null | undefined): Locale {
+  if (!header) return "en";
+  const candidates = header
+    .split(",")
+    .map((part) => part.split(";")[0]?.trim().slice(0, 2).toLowerCase());
+  for (const candidate of candidates) {
+    if ((locales as string[]).includes(candidate)) return candidate as Locale;
+  }
+  return "en";
+}
+
 export const localeNames: Record<Locale, string> = {
   pt: "Português",
   en: "English",
