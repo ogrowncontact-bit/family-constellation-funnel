@@ -22,22 +22,39 @@ const STORAGE_KEY = "sw-locale";
 
 function detectBrowserLocale(): Locale {
   if (typeof navigator === "undefined") return "en";
-  const nav = navigator.language?.slice(0, 2).toLowerCase();
-  return (locales as string[]).includes(nav) ? (nav as Locale) : "en";
+  // Check the visitor's full language preference list (not just the first
+  // entry) so e.g. ["fr-FR", "pt-BR"] still matches "pt" instead of falling
+  // straight through to English.
+  const candidates = navigator.languages?.length ? navigator.languages : [navigator.language];
+  for (const lang of candidates) {
+    const short = lang?.slice(0, 2).toLowerCase();
+    if ((locales as string[]).includes(short)) return short as Locale;
+  }
+  return "en";
 }
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>("en");
+export function LanguageProvider({
+  children,
+  initialLocale = "en",
+}: {
+  children: ReactNode;
+  initialLocale?: Locale;
+}) {
+  const [locale, setLocaleState] = useState<Locale>(initialLocale);
 
   useEffect(() => {
-    // One-time client hydration read (localStorage/navigator aren't available during SSR),
-    // intentionally setting state on mount rather than subscribing to an external store.
+    // One-time client hydration read (localStorage isn't available during SSR).
+    // The server already picked the best locale from the Accept-Language header
+    // (see layout.tsx), so this only needs to override it for a returning
+    // visitor's explicitly saved preference.
     const stored = typeof window !== "undefined" ? window.localStorage.getItem(STORAGE_KEY) : null;
     const detected =
       stored && (locales as string[]).includes(stored) ? (stored as Locale) : detectBrowserLocale();
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setLocaleState(detected);
-  }, []);
+    if (detected !== initialLocale) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setLocaleState(detected);
+    }
+  }, [initialLocale]);
 
   const setLocale = (next: Locale) => {
     setLocaleState(next);
