@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   description:
     "Combine Kabbalistic wisdom with numerology and systemic constellations to discover the hidden patterns of your family system.",
   verification: {
-    google: "Wzkgv8x73Qv6mc668DLsov0TyZECXpPv4uxFz2AHA0o",
+    google: "xoEiz-Z4OcpdvaK1-OhMgDWOD6zMZKKGDABylfuMbcg",
   },
 };
 
