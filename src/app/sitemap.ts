@@ -19,5 +19,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.8,
     },
+    {
+      url: `${SITE_URL}/que-son-las-constelaciones-familiares`,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/quest-ce-que-les-constellations-familiales`,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
   ];
 }
