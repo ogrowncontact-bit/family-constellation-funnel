@@ -20,6 +20,9 @@ export const metadata: Metadata = {
   title: "Digital Family Constellation — Discover Your Family Dynamics",
   description:
     "Combine Kabbalistic wisdom with numerology and systemic constellations to discover the hidden patterns of your family system.",
+  verification: {
+    google: "Wzkgv8x73Qv6mc668DLsov0TyZECXpPv4uxFz2AHA0o",
+  },
 };
 
 export default async function RootLayout({
