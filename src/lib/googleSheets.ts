@@ -13,6 +13,9 @@ export interface QuizResponseRow {
   locale: string;
   archetypeId: string;
   answers: Record<string, string>;
+  birthDate: string;
+  lifePathNumber: number;
+  sephirahId: string;
 }
 
 export interface PurchaseRow {
@@ -21,6 +24,8 @@ export interface PurchaseRow {
   locale: string;
   archetypeId: string;
   paymentIntentId: string;
+  lifePathNumber?: number;
+  sephirahId?: string;
 }
 
 function getCredentials() {
@@ -64,23 +69,28 @@ export async function appendLead(lead: LeadRow) {
 // if these tabs don't exist yet or Sheets isn't configured, so callers
 // should catch/ignore errors from these two.
 export async function logQuizResponse(row: QuizResponseRow) {
-  await appendRow("Respostas!A:F", [
+  await appendRow("Respostas!A:I", [
     new Date().toISOString(),
     row.name,
     row.email,
     row.locale,
     row.archetypeId,
     JSON.stringify(row.answers),
+    row.birthDate,
+    row.lifePathNumber,
+    row.sephirahId,
   ]);
 }
 
 export async function logPurchase(row: PurchaseRow) {
-  await appendRow("Compras!A:F", [
+  await appendRow("Compras!A:H", [
     new Date().toISOString(),
     row.name,
     row.email,
     row.locale,
     row.archetypeId,
     row.paymentIntentId,
+    row.lifePathNumber ?? "",
+    row.sephirahId ?? "",
   ]);
 }

@@ -3,12 +3,18 @@
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { QUIZ_QUESTIONS, scoreQuiz } from "@/lib/quiz";
+import { calculatePersonalNumerology, isValidBirthDate } from "@/lib/numerology";
 import { loadLead, saveQuiz } from "@/lib/quizStorage";
 
+// Step 0 asks for the birth date (needed for the Life Path Number /
+// Sephirah calculation); steps 1..N are the existing multiple-choice
+// questions. Total steps shown to the visitor include the birth date step.
 export function QuizFlow() {
   const { t, locale } = useLanguage();
   const [hasLead, setHasLead] = useState<boolean | null>(null);
   const [step, setStep] = useState(0);
+  const [birthDate, setBirthDate] = useState("");
+  const [birthDateTouched, setBirthDateTouched] = useState(false);
   const [answers, setAnswers] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -24,19 +30,26 @@ export function QuizFlow() {
 
   if (hasLead !== true) return null;
 
-  const totalSteps = QUIZ_QUESTIONS.length;
-  const questionDef = QUIZ_QUESTIONS[step];
-  const questionCopy = t.quiz.questions.find((q) => q.id === questionDef.id);
-  if (!questionCopy) return null;
+  const totalSteps = QUIZ_QUESTIONS.length + 1;
+  const isBirthDateStep = step === 0;
+  const questionDef = isBirthDateStep ? null : QUIZ_QUESTIONS[step - 1];
+  const questionCopy = questionDef ? t.quiz.questions.find((q) => q.id === questionDef.id) : null;
+  if (!isBirthDateStep && !questionCopy) return null;
 
-  const chosen = answers[questionDef.id];
+  const chosen = questionDef ? answers[questionDef.id] : undefined;
+  const birthDateValid = isValidBirthDate(birthDate);
+  const canAdvance = isBirthDateStep ? birthDateValid : Boolean(chosen);
 
   const selectOption = (optionId: string) => {
+    if (!questionDef) return;
     setAnswers((prev) => ({ ...prev, [questionDef.id]: optionId }));
   };
 
   const goNext = () => {
-    if (!chosen) return;
+    if (!canAdvance) {
+      if (isBirthDateStep) setBirthDateTouched(true);
+      return;
+    }
 
     if (step < totalSteps - 1) {
       setStep((s) => s + 1);
@@ -44,14 +57,21 @@ export function QuizFlow() {
     }
 
     const archetypeId = scoreQuiz(answers);
-    saveQuiz({ answers, archetypeId });
-
     const lead = loadLead();
+    const numerology = calculatePersonalNumerology(lead?.name ?? "", birthDate);
+    saveQuiz({ answers, archetypeId, ...numerology });
+
     if (lead) {
       fetch("/api/questionnaire", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: lead.name, email: lead.email, locale, answers }),
+        body: JSON.stringify({
+          name: lead.name,
+          email: lead.email,
+          locale,
+          answers,
+          birthDate,
+        }),
       }).catch(() => {});
     }
 
@@ -81,30 +101,56 @@ export function QuizFlow() {
         </div>
       </div>
 
-      <h2 className="font-display text-2xl font-semibold leading-snug sm:text-3xl">
-        {questionCopy.question}
-      </h2>
+      {isBirthDateStep ? (
+        <>
+          <h2 className="font-display text-2xl font-semibold leading-snug sm:text-3xl">
+            {t.quiz.birthDateStep.question}
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">{t.quiz.birthDateStep.helper}</p>
+          <div className="mt-6">
+            <input
+              type="date"
+              value={birthDate}
+              onChange={(e) => setBirthDate(e.target.value)}
+              onBlur={() => setBirthDateTouched(true)}
+              max={new Date().toISOString().slice(0, 10)}
+              min="1900-01-01"
+              aria-invalid={birthDateTouched && !birthDateValid}
+              className="w-full rounded-xl border border-border bg-background px-5 py-4 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+            {birthDateTouched && !birthDateValid && (
+              <p className="mt-2 text-sm text-red-600">{t.quiz.birthDateStep.invalid}</p>
+            )}
+          </div>
+        </>
+      ) : (
+        <>
+          <h2 className="font-display text-2xl font-semibold leading-snug sm:text-3xl">
+            {questionCopy!.question}
+          </h2>
 
-      <div className="mt-6 flex flex-col gap-3">
-        {questionCopy.options.map((option) => {
-          const isSelected = chosen === option.id;
-          return (
-            <button
-              key={option.id}
-              type="button"
-              onClick={() => selectOption(option.id)}
-              aria-pressed={isSelected}
-              className={`rounded-xl border px-5 py-4 text-left transition-colors ${
-                isSelected
-                  ? "border-primary bg-primary/10 text-foreground"
-                  : "border-border bg-background text-muted-foreground hover:border-primary/40 hover:text-foreground"
-              }`}
-            >
-              {option.label}
-            </button>
-          );
-        })}
-      </div>
+          <div className="mt-6 flex flex-col gap-3">
+            {questionCopy!.options.map((option) => {
+              const isSelected = chosen === option.id;
+              return (
+                <button
+                  key={option.id}
+                  type="button"
+                  onClick={() => selectOption(option.id)}
+                  aria-pressed={isSelected}
+                  className={`rounded-xl border px-5 py-4 text-left transition-colors ${
+                    isSelected
+                      ? "border-primary bg-primary/10 text-foreground"
+                      : "border-border bg-background text-muted-foreground hover:border-primary/40 hover:text-foreground"
+                  }`}
+                >
+                  {option.label}
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
 
       <div className="mt-8 flex items-center justify-between gap-3">
         <button
@@ -118,7 +164,7 @@ export function QuizFlow() {
         <button
           type="button"
           onClick={goNext}
-          disabled={!chosen}
+          disabled={!canAdvance}
           className="rounded-full bg-primary px-6 py-3 font-medium text-primary-foreground shadow-glow transition-transform hover:scale-[1.02] disabled:opacity-50 disabled:hover:scale-100"
         >
           {step < totalSteps - 1 ? t.quiz.next : t.quiz.submit}

@@ -3,6 +3,7 @@ import { getStripe } from "@/lib/stripe";
 import { locales, type Locale } from "@/lib/i18n/translations";
 import { scoreQuiz, validateAnswers } from "@/lib/quiz";
 import { computeCheckoutAmount, currencyForLocale } from "@/lib/pricing";
+import { calculatePersonalNumerology, isValidBirthDate } from "@/lib/numerology";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -26,7 +27,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "invalid_json" }, { status: 400 });
   }
 
-  const { name, email, locale, answers } = (body ?? {}) as Record<string, unknown>;
+  const { name, email, locale, answers, birthDate } = (body ?? {}) as Record<string, unknown>;
 
   if (typeof name !== "string" || name.trim().length < 2) {
     return NextResponse.json({ error: "invalid_name" }, { status: 400 });
@@ -40,11 +41,15 @@ export async function POST(request: Request) {
   if (!validateAnswers(answers)) {
     return NextResponse.json({ error: "invalid_answers" }, { status: 400 });
   }
+  if (!isValidBirthDate(birthDate)) {
+    return NextResponse.json({ error: "invalid_birth_date" }, { status: 400 });
+  }
 
   const safeLocale = locale as Locale;
   const archetypeId = scoreQuiz(answers);
   const trimmedName = name.trim().slice(0, 200);
   const trimmedEmail = email.trim().slice(0, 200);
+  const numerology = calculatePersonalNumerology(trimmedName, birthDate);
 
   let stripe;
   try {
@@ -63,6 +68,10 @@ export async function POST(request: Request) {
     email: trimmedEmail,
     locale: safeLocale,
     archetypeId,
+    birthDate: numerology.birthDate,
+    lifePathNumber: String(numerology.lifePathNumber),
+    nameNumber: String(numerology.nameNumber),
+    sephirahId: numerology.sephirahId,
   };
 
   try {

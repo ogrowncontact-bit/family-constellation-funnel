@@ -1,4 +1,5 @@
 import type { ArchetypeId } from "@/lib/quiz";
+import type { SephirahId } from "@/lib/numerology";
 
 export type Locale = "pt" | "en" | "es";
 
@@ -93,6 +94,19 @@ export interface Dictionary {
     back: string;
     submit: string;
     questions: { id: string; question: string; options: { id: string; label: string }[] }[];
+    birthDateStep: { question: string; helper: string; invalid: string };
+  };
+  numerology: {
+    sectionTitle: string;
+    lifePathLabel: string;
+    sephirahLabel: string;
+    nameNumberLabel: string;
+    masterNumberNote: string;
+    pdfIntro: string;
+    sephirot: Record<
+      SephirahId,
+      { name: string; title: string; meaning: string; pdfBody: string[] }
+    >;
   };
   results: {
     metaTitle: string;
@@ -328,6 +342,113 @@ export const dictionaries: Record<Locale, Dictionary> = {
           ],
         },
       ],
+      birthDateStep: {
+        question: "Qual é a sua data de nascimento?",
+        helper:
+          "Vamos usar isso para calcular seu Número do Caminho de Vida e sua Sephirah pessoal na Árvore da Vida.",
+        invalid: "Digite uma data de nascimento válida.",
+      },
+    },
+    numerology: {
+      sectionTitle: "Sua Numerologia Cabalística",
+      lifePathLabel: "Número do Caminho de Vida",
+      sephirahLabel: "Sua Sephirah pessoal",
+      nameNumberLabel: "Número de Guematria do seu nome",
+      masterNumberNote: "{number} é um Número Mestre — carrega um potencial espiritual amplificado.",
+      pdfIntro:
+        "Além do seu padrão familiar, calculamos sua numerologia cabalística a partir da sua data de nascimento e do seu nome. Ela revela em qual Sephirah da Árvore da Vida sua energia pessoal está mais concentrada agora.",
+      sephirot: {
+        keter: {
+          name: "Keter",
+          title: "A Coroa",
+          meaning:
+            "Você carrega a energia da origem e da vontade pura — a semente antes da forma. No seu sistema familiar, sua função costuma ser abrir caminhos que ninguém mais teve coragem de iniciar.",
+          pdfBody: [
+            "Keter, a Coroa, é a primeira Sephirah da Árvore da Vida — o ponto de origem antes de qualquer manifestação. Quem carrega essa vibração sente um chamado para começar coisas: novos caminhos, novas formas de existir dentro de um sistema que talvez estivesse parado há gerações.",
+            "No seu processo de cura, isso significa reconhecer que você não precisa apenas repetir o que já foi traçado. Parte do seu trabalho é confiar na pureza da sua intenção, mesmo quando ela abre um caminho que sua família ainda não percorreu.",
+          ],
+        },
+        chokmah: {
+          name: "Chokmah",
+          title: "A Sabedoria",
+          meaning:
+            "Sua energia é a da faísca criativa e da intuição repentina. Você costuma enxergar possibilidades antes de conseguir explicá-las — e isso pode ter sido mal compreendido dentro da sua família.",
+          pdfBody: [
+            "Chokmah representa a sabedoria bruta, o insight que chega antes da lógica. É a energia masculina e expansiva da Árvore da Vida, associada à intuição e à visão de futuro.",
+            "Quando essa Sephirah é dominante, é comum ter passado a vida sentindo ideias e percepções fortes sem espaço para expressá-las. Honrar essa intuição — em vez de silenciá-la para caber no sistema familiar — é parte central do seu caminho.",
+          ],
+        },
+        binah: {
+          name: "Binah",
+          title: "O Entendimento",
+          meaning:
+            "Você tem a capacidade de dar forma e estrutura ao que é caótico — de compreender profundamente antes de agir. É a energia maternal e organizadora da Árvore da Vida.",
+          pdfBody: [
+            "Binah é a Sephirah do entendimento profundo: ela recebe a faísca de Chokmah e lhe dá forma, estrutura e limite. É frequentemente associada ao princípio maternal — não pela função de gênero, mas pela capacidade de gerar e conter.",
+            "Se essa é sua Sephirah, é provável que você tenha assumido, cedo demais, o papel de 'organizar' ou 'segurar' emocionalmente sua família. Parte da sua cura é aprender a estruturar sua própria vida sem carregar sozinho(a) o peso do sistema inteiro.",
+          ],
+        },
+        chesed: {
+          name: "Chesed",
+          title: "A Bondade",
+          meaning:
+            "Generosidade, expansão e amor incondicional são a sua marca. Você tende a dar mais do que recebe — e a Constelação Familiar pode revelar de onde vem esse padrão.",
+          pdfBody: [
+            "Chesed, a Bondade ou Misericórdia, é a energia da expansão generosa, do amor que não calcula retorno. Na Árvore da Vida, representa a capacidade de doar sem medida.",
+            "Quando essa Sephirah domina seu mapa, é comum repetir, sem perceber, um papel de 'cuidador(a)' da família — muitas vezes herdado de um ancestral que também deu mais do que recebeu. Aprender a equilibrar Chesed com limites saudáveis é o próximo passo da sua jornada.",
+          ],
+        },
+        gevurah: {
+          name: "Gevurah",
+          title: "O Rigor",
+          meaning:
+            "Disciplina, limites e justiça guiam sua energia. Você sente profundamente quando algo é injusto — dentro e fora da sua família — e isso molda suas decisões.",
+          pdfBody: [
+            "Gevurah, o Rigor ou Força, equilibra a expansão de Chesed com limite, disciplina e discernimento. É a energia que diz 'não' quando necessário e que corta o que já não serve.",
+            "Se essa é sua Sephirah dominante, você pode ter carregado, dentro do seu sistema familiar, o papel de impor limites que outros não conseguiam — às vezes pagando um preço social por isso. Reconhecer essa força como um dom, e não como um defeito, é parte da sua cura.",
+          ],
+        },
+        tiferet: {
+          name: "Tiferet",
+          title: "A Beleza",
+          meaning:
+            "Você busca, naturalmente, o equilíbrio entre extremos — é a ponte entre o rigor e a bondade, entre a razão e o coração. Costuma ser quem harmoniza os conflitos da família.",
+          pdfBody: [
+            "Tiferet, a Beleza ou Harmonia, ocupa o centro da Árvore da Vida — o ponto de equilíbrio entre Chesed e Gevurah, entre dar e conter. É associada à compaixão madura e ao coração do sistema.",
+            "Quem carrega essa energia costuma, desde cedo, assumir o papel de mediador(a) emocional da família. O convite aqui é buscar harmonia sem se anular no processo — cuidar do equilíbrio dos outros sem abrir mão do seu próprio.",
+          ],
+        },
+        netzach: {
+          name: "Netzach",
+          title: "A Vitória",
+          meaning:
+            "Persistência, emoção e criatividade duradoura são a sua força. Você não desiste fácil — mesmo quando o padrão familiar tenta te puxar de volta.",
+          pdfBody: [
+            "Netzach, a Vitória ou Eternidade, é a energia da resistência emocional e da criatividade que atravessa o tempo — a vontade que continua mesmo diante do cansaço.",
+            "Se essa Sephirah domina seu mapa, é provável que você seja, na sua família, quem 'não desiste' — às vezes carregando esperanças que não são só suas. Canalizar essa persistência para os seus próprios objetivos, e não apenas para sustentar o sistema, é o próximo passo.",
+          ],
+        },
+        hod: {
+          name: "Hod",
+          title: "O Esplendor",
+          meaning:
+            "Comunicação, intelecto e humildade formam a sua base. Você processa o mundo — e sua família — através da mente, buscando entender antes de sentir.",
+          pdfBody: [
+            "Hod, o Esplendor, é a Sephirah da comunicação, do intelecto e da humildade — a capacidade de nomear e explicar o que se sente. Equilibra a emoção de Netzach com clareza mental.",
+            "Quem carrega essa energia costuma ser, na família, quem 'explica' ou 'entende' os padrões antes dos outros — o que pode ser solitário. Usar essa clareza para se libertar, e não apenas para justificar o sistema, é o caminho indicado pela sua Sephirah.",
+          ],
+        },
+        yesod: {
+          name: "Yesod",
+          title: "A Fundação",
+          meaning:
+            "Você é a ponte entre o espiritual e o material — a fundação energética que conecta gerações. Sonhos, intuição e memória ancestral falam forte através de você.",
+          pdfBody: [
+            "Yesod, a Fundação, é a Sephirah que conecta todas as energias superiores da Árvore da Vida ao plano material — é a base, o alicerce, a ponte entre mundos.",
+            "Se essa é sua Sephirah, é comum que você sinta memórias, emoções e padrões da sua linhagem familiar de forma muito vívida, às vezes através de sonhos ou intuições fortes. Seu papel é dar uma fundação sólida e consciente a tudo isso — sem ser apenas o canal invisível por onde o passado da família continua passando.",
+          ],
+        },
+      },
     },
     results: {
       metaTitle: "Seu resultado — SoulWeave",
@@ -816,6 +937,112 @@ export const dictionaries: Record<Locale, Dictionary> = {
           ],
         },
       ],
+      birthDateStep: {
+        question: "What's your date of birth?",
+        helper: "We'll use this to calculate your Life Path Number and your personal Sephirah on the Tree of Life.",
+        invalid: "Please enter a valid date of birth.",
+      },
+    },
+    numerology: {
+      sectionTitle: "Your Kabbalistic Numerology",
+      lifePathLabel: "Life Path Number",
+      sephirahLabel: "Your personal Sephirah",
+      nameNumberLabel: "Your name's Guematria Number",
+      masterNumberNote: "{number} is a Master Number — it carries an amplified spiritual potential.",
+      pdfIntro:
+        "Beyond your family pattern, we calculated your Kabbalistic numerology from your birth date and name. It reveals which Sephirah on the Tree of Life your personal energy is most concentrated in right now.",
+      sephirot: {
+        keter: {
+          name: "Keter",
+          title: "The Crown",
+          meaning:
+            "You carry the energy of origin and pure will — the seed before form. In your family system, your role is often to open paths no one else dared to start.",
+          pdfBody: [
+            "Keter, the Crown, is the first Sephirah on the Tree of Life — the point of origin before any manifestation. Those who carry this vibration feel called to begin things: new paths, new ways of existing within a system that may have been stuck for generations.",
+            "In your healing process, this means recognizing you don't have to only repeat what's already been laid out. Part of your work is trusting the purity of your own intention, even when it opens a path your family hasn't walked before.",
+          ],
+        },
+        chokmah: {
+          name: "Chokmah",
+          title: "Wisdom",
+          meaning:
+            "Your energy is the creative spark and sudden intuition. You tend to see possibilities before you can explain them — which may have been misunderstood inside your family.",
+          pdfBody: [
+            "Chokmah represents raw wisdom, the insight that arrives before logic. It's the expansive, forward-looking energy of the Tree of Life, associated with intuition and vision.",
+            "When this Sephirah dominates, it's common to have spent life sensing strong ideas and perceptions with no room to express them. Honoring that intuition — instead of silencing it to fit the family system — is central to your path.",
+          ],
+        },
+        binah: {
+          name: "Binah",
+          title: "Understanding",
+          meaning:
+            "You have the capacity to give shape and structure to what's chaotic — to deeply understand before acting. It's the maternal, organizing energy of the Tree of Life.",
+          pdfBody: [
+            "Binah is the Sephirah of deep understanding: it receives Chokmah's spark and gives it form, structure and boundary. It's often associated with the maternal principle — not by gender, but by the capacity to generate and contain.",
+            "If this is your Sephirah, you likely took on, too early, the role of 'holding' your family together emotionally. Part of your healing is learning to structure your own life without carrying the whole system's weight alone.",
+          ],
+        },
+        chesed: {
+          name: "Chesed",
+          title: "Loving-Kindness",
+          meaning:
+            "Generosity, expansion and unconditional love are your signature. You tend to give more than you receive — and Family Constellation work can reveal where that pattern comes from.",
+          pdfBody: [
+            "Chesed, Loving-Kindness or Mercy, is the energy of generous expansion, of love that doesn't calculate a return. On the Tree of Life, it represents the capacity to give without measure.",
+            "When this Sephirah dominates your map, it's common to unknowingly repeat a family 'caretaker' role — often inherited from an ancestor who also gave more than they received. Learning to balance Chesed with healthy limits is the next step on your journey.",
+          ],
+        },
+        gevurah: {
+          name: "Gevurah",
+          title: "Strength",
+          meaning:
+            "Discipline, boundaries and justice guide your energy. You feel it deeply when something is unfair — inside and outside your family — and it shapes your decisions.",
+          pdfBody: [
+            "Gevurah, Strength or Severity, balances Chesed's expansion with limit, discipline and discernment. It's the energy that says 'no' when needed and cuts away what no longer serves.",
+            "If this is your dominant Sephirah, you may have carried, within your family system, the role of enforcing limits others couldn't — sometimes paying a social price for it. Recognizing this strength as a gift, not a flaw, is part of your healing.",
+          ],
+        },
+        tiferet: {
+          name: "Tiferet",
+          title: "Beauty",
+          meaning:
+            "You naturally seek balance between extremes — the bridge between strength and kindness, reason and heart. You tend to be the one who harmonizes family conflicts.",
+          pdfBody: [
+            "Tiferet, Beauty or Harmony, sits at the center of the Tree of Life — the balance point between Chesed and Gevurah, between giving and containing. It's associated with mature compassion and the heart of the system.",
+            "Those who carry this energy often took on, from early on, the role of the family's emotional mediator. The invitation here is to seek harmony without erasing yourself in the process — caring for others' balance without giving up your own.",
+          ],
+        },
+        netzach: {
+          name: "Netzach",
+          title: "Victory",
+          meaning:
+            "Persistence, emotion and lasting creativity are your strength. You don't give up easily — even when the family pattern tries to pull you back.",
+          pdfBody: [
+            "Netzach, Victory or Eternity, is the energy of emotional endurance and creativity that outlasts time — the will that keeps going even through exhaustion.",
+            "If this Sephirah dominates your map, you're likely the one in your family who 'doesn't give up' — sometimes carrying hopes that aren't only your own. Channeling that persistence toward your own goals, not just sustaining the system, is the next step.",
+          ],
+        },
+        hod: {
+          name: "Hod",
+          title: "Splendor",
+          meaning:
+            "Communication, intellect and humility are your foundation. You process the world — and your family — through the mind, seeking to understand before you feel.",
+          pdfBody: [
+            "Hod, Splendor, is the Sephirah of communication, intellect and humility — the capacity to name and explain what's felt. It balances Netzach's emotion with mental clarity.",
+            "Those who carry this energy are often the family member who 'explains' or 'understands' patterns before others do — which can be lonely. Using that clarity to free yourself, rather than just to justify the system, is the path your Sephirah points to.",
+          ],
+        },
+        yesod: {
+          name: "Yesod",
+          title: "Foundation",
+          meaning:
+            "You're the bridge between the spiritual and the material — the energetic foundation connecting generations. Dreams, intuition and ancestral memory speak loudly through you.",
+          pdfBody: [
+            "Yesod, Foundation, is the Sephirah that connects all the higher energies of the Tree of Life to the material plane — it's the base, the bridge between worlds.",
+            "If this is your Sephirah, you likely feel your family lineage's memories, emotions and patterns very vividly, sometimes through dreams or strong intuitions. Your role is to give all of that a solid, conscious foundation — rather than simply being the invisible channel the family's past keeps flowing through.",
+          ],
+        },
+      },
     },
     results: {
       metaTitle: "Your result — SoulWeave",
@@ -1304,6 +1531,113 @@ export const dictionaries: Record<Locale, Dictionary> = {
           ],
         },
       ],
+      birthDateStep: {
+        question: "¿Cuál es tu fecha de nacimiento?",
+        helper:
+          "La usaremos para calcular tu Número de Camino de Vida y tu Sephirah personal en el Árbol de la Vida.",
+        invalid: "Ingresa una fecha de nacimiento válida.",
+      },
+    },
+    numerology: {
+      sectionTitle: "Tu Numerología Cabalística",
+      lifePathLabel: "Número de Camino de Vida",
+      sephirahLabel: "Tu Sephirah personal",
+      nameNumberLabel: "Número de Guematría de tu nombre",
+      masterNumberNote: "{number} es un Número Maestro — lleva un potencial espiritual amplificado.",
+      pdfIntro:
+        "Además de tu patrón familiar, calculamos tu numerología cabalística a partir de tu fecha de nacimiento y tu nombre. Revela en qué Sephirah del Árbol de la Vida está más concentrada tu energía personal ahora mismo.",
+      sephirot: {
+        keter: {
+          name: "Keter",
+          title: "La Corona",
+          meaning:
+            "Llevas la energía del origen y la voluntad pura — la semilla antes de la forma. En tu sistema familiar, tu función suele ser abrir caminos que nadie más se atrevió a comenzar.",
+          pdfBody: [
+            "Keter, la Corona, es la primera Sephirah del Árbol de la Vida — el punto de origen antes de cualquier manifestación. Quien lleva esta vibración siente el llamado a comenzar cosas: nuevos caminos, nuevas formas de existir dentro de un sistema que tal vez llevaba generaciones estancado.",
+            "En tu proceso de sanación, esto significa reconocer que no tienes que limitarte a repetir lo ya trazado. Parte de tu trabajo es confiar en la pureza de tu propia intención, incluso cuando abre un camino que tu familia aún no ha recorrido.",
+          ],
+        },
+        chokmah: {
+          name: "Chokmah",
+          title: "La Sabiduría",
+          meaning:
+            "Tu energía es la chispa creativa y la intuición repentina. Sueles ver posibilidades antes de poder explicarlas — algo que quizás no fue bien comprendido dentro de tu familia.",
+          pdfBody: [
+            "Chokmah representa la sabiduría en bruto, la intuición que llega antes que la lógica. Es la energía expansiva del Árbol de la Vida, asociada a la intuición y a la visión de futuro.",
+            "Cuando esta Sephirah domina, es común haber pasado la vida sintiendo ideas y percepciones fuertes sin espacio para expresarlas. Honrar esa intuición — en lugar de silenciarla para encajar en el sistema familiar — es central en tu camino.",
+          ],
+        },
+        binah: {
+          name: "Binah",
+          title: "El Entendimiento",
+          meaning:
+            "Tienes la capacidad de dar forma y estructura a lo caótico — de comprender profundamente antes de actuar. Es la energía materna y organizadora del Árbol de la Vida.",
+          pdfBody: [
+            "Binah es la Sephirah del entendimiento profundo: recibe la chispa de Chokmah y le da forma, estructura y límite. Se asocia a menudo con el principio materno — no por el género, sino por la capacidad de generar y contener.",
+            "Si esta es tu Sephirah, es probable que hayas asumido, demasiado pronto, el papel de 'sostener' emocionalmente a tu familia. Parte de tu sanación es aprender a estructurar tu propia vida sin cargar tú solo(a) con el peso de todo el sistema.",
+          ],
+        },
+        chesed: {
+          name: "Chesed",
+          title: "La Bondad",
+          meaning:
+            "Generosidad, expansión y amor incondicional son tu sello. Sueles dar más de lo que recibes — y la Constelación Familiar puede revelar de dónde viene ese patrón.",
+          pdfBody: [
+            "Chesed, la Bondad o Misericordia, es la energía de la expansión generosa, del amor que no calcula el retorno. En el Árbol de la Vida, representa la capacidad de dar sin medida.",
+            "Cuando esta Sephirah domina tu mapa, es común repetir, sin darte cuenta, un papel de 'cuidador(a)' familiar — a menudo heredado de un antepasado que también dio más de lo que recibió. Aprender a equilibrar Chesed con límites sanos es el siguiente paso de tu camino.",
+          ],
+        },
+        gevurah: {
+          name: "Gevurah",
+          title: "El Rigor",
+          meaning:
+            "Disciplina, límites y justicia guían tu energía. Sientes profundamente cuando algo es injusto — dentro y fuera de tu familia — y eso moldea tus decisiones.",
+          pdfBody: [
+            "Gevurah, el Rigor o la Fuerza, equilibra la expansión de Chesed con límite, disciplina y discernimiento. Es la energía que dice 'no' cuando hace falta y corta lo que ya no sirve.",
+            "Si esta es tu Sephirah dominante, es posible que hayas cargado, dentro de tu sistema familiar, el papel de imponer límites que otros no lograban — a veces pagando un precio social por ello. Reconocer esta fuerza como un don, y no como un defecto, es parte de tu sanación.",
+          ],
+        },
+        tiferet: {
+          name: "Tiferet",
+          title: "La Belleza",
+          meaning:
+            "Buscas de forma natural el equilibrio entre extremos — el puente entre el rigor y la bondad, entre la razón y el corazón. Sueles ser quien armoniza los conflictos familiares.",
+          pdfBody: [
+            "Tiferet, la Belleza o Armonía, ocupa el centro del Árbol de la Vida — el punto de equilibrio entre Chesed y Gevurah, entre dar y contener. Se asocia con la compasión madura y el corazón del sistema.",
+            "Quien lleva esta energía suele asumir, desde muy pronto, el papel de mediador(a) emocional de la familia. La invitación aquí es buscar la armonía sin anularte en el proceso — cuidar el equilibrio de los demás sin renunciar al propio.",
+          ],
+        },
+        netzach: {
+          name: "Netzach",
+          title: "La Victoria",
+          meaning:
+            "Persistencia, emoción y creatividad duradera son tu fuerza. No te rindes fácilmente — incluso cuando el patrón familiar intenta arrastrarte de vuelta.",
+          pdfBody: [
+            "Netzach, la Victoria o Eternidad, es la energía de la resistencia emocional y la creatividad que atraviesa el tiempo — la voluntad que continúa incluso ante el cansancio.",
+            "Si esta Sephirah domina tu mapa, es probable que seas, en tu familia, quien 'no se rinde' — a veces cargando esperanzas que no son solo tuyas. Canalizar esa persistencia hacia tus propias metas, y no solo para sostener el sistema, es el siguiente paso.",
+          ],
+        },
+        hod: {
+          name: "Hod",
+          title: "El Esplendor",
+          meaning:
+            "Comunicación, intelecto y humildad forman tu base. Procesas el mundo — y a tu familia — a través de la mente, buscando entender antes de sentir.",
+          pdfBody: [
+            "Hod, el Esplendor, es la Sephirah de la comunicación, el intelecto y la humildad — la capacidad de nombrar y explicar lo que se siente. Equilibra la emoción de Netzach con claridad mental.",
+            "Quien lleva esta energía suele ser, en la familia, quien 'explica' o 'entiende' los patrones antes que los demás — lo cual puede ser solitario. Usar esa claridad para liberarte, y no solo para justificar el sistema, es el camino que señala tu Sephirah.",
+          ],
+        },
+        yesod: {
+          name: "Yesod",
+          title: "El Fundamento",
+          meaning:
+            "Eres el puente entre lo espiritual y lo material — el fundamento energético que conecta generaciones. Sueños, intuición y memoria ancestral hablan fuerte a través de ti.",
+          pdfBody: [
+            "Yesod, el Fundamento, es la Sephirah que conecta todas las energías superiores del Árbol de la Vida con el plano material — es la base, el puente entre mundos.",
+            "Si esta es tu Sephirah, es común que sientas los recuerdos, emociones y patrones de tu linaje familiar de forma muy vívida, a veces a través de sueños o intuiciones fuertes. Tu papel es darle a todo eso un fundamento sólido y consciente — sin ser solo el canal invisible por donde sigue pasando el pasado de la familia.",
+          ],
+        },
+      },
     },
     results: {
       metaTitle: "Tu resultado — SoulWeave",

@@ -1,10 +1,21 @@
 import { getStripe } from "@/lib/stripe";
-import { generateReportPdf } from "@/lib/pdf/generate";
+import { generateReportPdf, type ReportNumerology } from "@/lib/pdf/generate";
 import { sendReportEmail } from "@/lib/resend";
 import { logPurchase } from "@/lib/googleSheets";
 import { locales, type Locale } from "@/lib/i18n/translations";
 import { isArchetypeId } from "@/lib/quiz";
+import { isSephirahId } from "@/lib/numerology";
 import type Stripe from "stripe";
+
+function readNumerologyFromMetadata(metadata: Record<string, string | undefined>): ReportNumerology | undefined {
+  const { lifePathNumber, nameNumber, sephirahId } = metadata;
+  const lifePath = Number(lifePathNumber);
+  const nameNum = Number(nameNumber);
+  if (!Number.isFinite(lifePath) || !Number.isFinite(nameNum) || !isSephirahId(sephirahId)) {
+    return undefined;
+  }
+  return { lifePathNumber: lifePath, nameNumber: nameNum, sephirahId };
+}
 
 export type DeliveryResult =
   | { status: "sent"; email: string }
@@ -33,7 +44,8 @@ async function deliverForPaymentIntent(
     return { status: "already_sent", email };
   }
 
-  const pdfBuffer = await generateReportPdf(name ?? "", locale, archetypeId);
+  const numerology = readNumerologyFromMetadata(metadata as Record<string, string | undefined>);
+  const pdfBuffer = await generateReportPdf(name ?? "", locale, archetypeId, numerology);
   await sendReportEmail({ to: email, name: name ?? "", locale, pdfBuffer });
 
   await stripe.paymentIntents.update(paymentIntent.id, {
@@ -41,7 +53,15 @@ async function deliverForPaymentIntent(
   });
 
   try {
-    await logPurchase({ name: name ?? "", email, locale, archetypeId, paymentIntentId: paymentIntent.id });
+    await logPurchase({
+      name: name ?? "",
+      email,
+      locale,
+      archetypeId,
+      paymentIntentId: paymentIntent.id,
+      lifePathNumber: numerology?.lifePathNumber,
+      sephirahId: numerology?.sephirahId,
+    });
   } catch (err) {
     console.warn("[report-delivery] failed to log purchase to Google Sheets:", err);
   }

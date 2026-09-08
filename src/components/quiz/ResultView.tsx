@@ -5,6 +5,7 @@ import { useLanguage } from "@/lib/i18n/LanguageProvider";
 import { APP_URL } from "@/lib/constants";
 import { loadLead, loadQuiz, type StoredLead, type StoredQuiz } from "@/lib/quizStorage";
 import type { CheckoutAmount } from "@/lib/pricing";
+import { isMasterNumber } from "@/lib/numerology";
 
 const CURRENCY_LOCALE: Record<string, string> = { pt: "pt-BR", en: "en-US", es: "es-ES" };
 
@@ -58,6 +59,7 @@ export function ResultView() {
   }
 
   const archetype = t.archetypes[quiz.archetypeId];
+  const sephirah = t.numerology.sephirot[quiz.sephirahId];
   const appUrl = (() => {
     const target = new URL(APP_URL);
     target.searchParams.set("utm_source", "funnel");
@@ -74,7 +76,13 @@ export function ResultView() {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: lead.name, email: lead.email, locale, answers: quiz.answers }),
+        body: JSON.stringify({
+          name: lead.name,
+          email: lead.email,
+          locale,
+          answers: quiz.answers,
+          birthDate: quiz.birthDate,
+        }),
       });
       const data = await res.json();
       if (!res.ok || !data.url) throw new Error("checkout_failed");
@@ -104,6 +112,30 @@ export function ResultView() {
         >
           {t.results.ctaApp}
         </a>
+      </div>
+
+      <div className="rounded-2xl border border-border bg-card/70 p-6 shadow-elevated sm:p-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+          {t.numerology.sectionTitle}
+        </p>
+        <div className="mt-4 flex flex-wrap gap-6">
+          <div>
+            <p className="text-xs text-muted-foreground">{t.numerology.lifePathLabel}</p>
+            <p className="font-display text-3xl font-semibold">{quiz.lifePathNumber}</p>
+            {isMasterNumber(quiz.lifePathNumber) && (
+              <p className="mt-1 max-w-xs text-xs text-primary">
+                {t.numerology.masterNumberNote.replace("{number}", String(quiz.lifePathNumber))}
+              </p>
+            )}
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">{t.numerology.sephirahLabel}</p>
+            <p className="font-display text-3xl font-semibold">
+              {sephirah.name} <span className="text-lg text-muted-foreground">— {sephirah.title}</span>
+            </p>
+          </div>
+        </div>
+        <p className="mt-4 text-muted-foreground">{sephirah.meaning}</p>
       </div>
 
       <div className="rounded-2xl border border-primary/40 bg-gradient-divine p-6 shadow-elevated sm:p-8">

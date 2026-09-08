@@ -1,4 +1,5 @@
 import type { ArchetypeId } from "@/lib/quiz";
+import type { SephirahId } from "@/lib/numerology";
 
 const LEAD_KEY = "sw-lead";
 const QUIZ_KEY = "sw-quiz";
@@ -12,6 +13,10 @@ export interface StoredLead {
 export interface StoredQuiz {
   answers: Record<string, string>;
   archetypeId: ArchetypeId;
+  birthDate: string;
+  lifePathNumber: number;
+  nameNumber: number;
+  sephirahId: SephirahId;
 }
 
 function readJson<T>(key: string): T | null {

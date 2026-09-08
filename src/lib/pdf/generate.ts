@@ -1,16 +1,38 @@
 import { renderToBuffer, type DocumentProps } from "@react-pdf/renderer";
 import { createElement, type ReactElement } from "react";
 import { ReportDocument } from "@/lib/pdf/ReportDocument";
-import { dictionaries, type Locale } from "@/lib/i18n/translations";
+import { dictionaries, type Dictionary, type Locale } from "@/lib/i18n/translations";
 import type { ArchetypeId } from "@/lib/quiz";
+import { isMasterNumber, type SephirahId } from "@/lib/numerology";
 
 const DATE_LOCALE: Record<Locale, string> = { pt: "pt-BR", en: "en-US", es: "es-ES" };
 const BRAND_NAME = "SoulWeave";
 
+export interface ReportNumerology {
+  lifePathNumber: number;
+  nameNumber: number;
+  sephirahId: SephirahId;
+}
+
+function buildNumerologySection(dict: Dictionary, numerology: ReportNumerology) {
+  const sephirah = dict.numerology.sephirot[numerology.sephirahId];
+  const body = [
+    dict.numerology.pdfIntro,
+    `${dict.numerology.lifePathLabel}: ${numerology.lifePathNumber} — ${sephirah.name} (${sephirah.title})`,
+    ...(isMasterNumber(numerology.lifePathNumber)
+      ? [dict.numerology.masterNumberNote.replace("{number}", String(numerology.lifePathNumber))]
+      : []),
+    `${dict.numerology.nameNumberLabel}: ${numerology.nameNumber}`,
+    ...sephirah.pdfBody,
+  ];
+  return { heading: dict.numerology.sectionTitle, body };
+}
+
 export async function generateReportPdf(
   name: string,
   locale: Locale,
-  archetypeId: ArchetypeId
+  archetypeId: ArchetypeId,
+  numerology?: ReportNumerology
 ): Promise<Buffer> {
   const dict = dictionaries[locale] ?? dictionaries.en;
   const archetype = dict.archetypes[archetypeId];
@@ -19,11 +41,15 @@ export async function generateReportPdf(
     dateStyle: "long",
   }).format(new Date());
 
+  const pdfSections = numerology
+    ? [...archetype.pdfSections, buildNumerologySection(dict, numerology)]
+    : archetype.pdfSections;
+
   const element = createElement(ReportDocument, {
     name: name || "—",
     archetypeTitle: archetype.title,
     archetypeSummary: archetype.shortSummary,
-    pdfSections: archetype.pdfSections,
+    pdfSections,
     generatedAtLabel,
     brandName: BRAND_NAME,
   });
